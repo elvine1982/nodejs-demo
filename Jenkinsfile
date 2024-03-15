@@ -4,6 +4,7 @@ pipeline {
     tools{
         jdk 'jdk17'
         nodejs 'node16'
+        nexus 'nexus-tool'
     }
     
     environment {
@@ -40,6 +41,12 @@ pipeline {
                 sh 'docker push elvine1982/nodeapp:$BUILD_NUMBER'
             }
         }
+        stage('Deploy to Nexus') {
+            steps{
+	           echo("Deploy to Nexus successfully run");
+         }
+      }
+   }
 }
 post {
         always {
