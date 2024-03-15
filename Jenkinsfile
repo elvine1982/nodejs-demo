@@ -1,7 +1,14 @@
 pipeline {
     agent any 
+    
+    tools{
+        jdk 'jdk17'
+        nodejs 'node16'
+    }
+    
     environment {
     DOCKERHUB_CREDENTIALS = credentials('todo-jenkins')
+    SCANNER_HOME= tool 'sonar-scanner'
     }
     stages { 
         stage('SCM Checkout') {
@@ -13,6 +20,14 @@ pipeline {
         stage('Build docker image') {
             steps {  
                 sh 'docker build -t elvine1982/nodeapp:$BUILD_NUMBER .'
+            }
+        }
+        
+        stage('SONARQUBE ANALYSIS') {
+            steps {
+                withSonarQubeEnv('sonar-scanner') {
+                    sh " $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Docker-job -Dsonar.projectKey=Docker-job "
+                }
             }
         }
         stage('login to dockerhub') {
@@ -32,4 +47,3 @@ post {
         }
     }
 }
-
